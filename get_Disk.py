@@ -9,45 +9,6 @@ from astropy.io import fits
 from astropy.convolution import convolve
 import matplotlib.pyplot as plt
 from scipy.optimize import minimize
-
-def get_Noise(emp_sph,PSF):
-
-   # measure photon noise:
-   # for HIP 57013  : http://simbad.u-strasbg.fr/simbad/sim-id?Ident=HIP+57313
-   #  H = 5.078 : http://astroweb.case.edu/ssm/ASTR620/mags.html#flux
-   # so flux in Jy is
-   # f_Jy = 1080 * 10^(-0.4*H)=2.75e-10 = 10.1 Jy
-   
-   # https://www.eso.org/sci/facilities/paranal/instruments/sphere/inst/filters.html
-   
-   # dlambda/lambda = 0.032 in H3
-   # VLT mirror is pi*(4)^2 = 50 m2
-   
-   # f_phot= 10.1 Jy * 1.51e7 * 0.032 * 50 = 2.4 10^8 photons sec^-1
-   
-   # We take a loss of flux of ~0.3 du to going though sphere (optics trghouput etc)
-   # f_phot_pup= 10.1 Jy * 1.51e7 * 0.032 * 50 = 1 10^8 photons sec^-1
-   
-   f_phot_pup = 1e8 # photons/s
-   
-   # We multiply image by 60s
-   PSF_photons = PSF/np.sum(PSF)*f_phot_pup*60 # photons
-   emp_sph_photons = emp_sph/np.sum(PSF)*f_phot_pup*60 # photons
-
-   # Ensure same noise
-   np.random.seed(53)
-   noise = (np.random.poisson(emp_sph_photons) - emp_sph_photons)/np.max(PSF_photons)
-   noise = np.where(noise == 0,1e-12,noise)
-   plt.figure()
-   plt.imshow(noise)
-   plt.colorbar(label='Contrast')
-   plt.savefig('Images/noise_photons_contrast.jpg')
-   plt.show()
-
-   hdu = fits.PrimaryHDU(noise)
-   hdu.writeto('FITS_files/disk_LIU_noisemap.fits',overwrite=True)
-   
-   return noise
    
 def getDisk(theta, noise, SNR):
 
@@ -129,24 +90,19 @@ def logl(theta, data, noise, PSF, SNR):
      
 # PSF
 
-hdulist_PSF = fits.open('FITS_files/ird_convert_recenter_dc2022-IRD_SCIENCE_PSF_MASTER_CUBE-median_unsat.fits')
-PSF = hdulist_PSF[0].data[-1,-1,:,:]
+hdulist_PSF = fits.open('FITS_files/disk_LIU_PSF_convolution.fits')
+PSF = hdulist_PSF[0].data
 hdulist_PSF.close()
-
-hdu = fits.PrimaryHDU(PSF)
-hdu.writeto('FITS_files/disk_LIU_PSF_convolution.fits',overwrite=True)
 
 # Noise
 
-hdulist_emp_sph = fits.open('FITS_files/ird_convert_recenter_dc2022-IRD_SCIENCE_REDUCED_MASTER_CUBE-center_im.fits')
-emp_sph = hdulist_emp_sph[0].data[0,52,412:1024-412,412:1024-412]
-hdulist_emp_sph.close()
-
-noise = get_Noise(emp_sph,PSF)
+hdulist_noise = fits.open('FITS_files/disk_LIU_noisemap.fits')
+noise = hdulist_noise[0].data
+hdulist_noise.close()
 
 # Image parameters
 pixel_scale = 0.01225 # pixel scale in arcsec/px
-dstar = 80 # distance to the star in pc
+dstar = 80. # distance to the star in pc
 nx = 200 # number of pixels of your image in X
 ny = 200 # number of pixels of your image in Y
 
@@ -162,7 +118,7 @@ g1 = 0.7
 g2 = -0.2
 alpha = 0.665
 
-SNR = 2.
+SNR = 10.
 
 # Disk model
 model = ScatteredLightDisk(nx=nx,
@@ -197,7 +153,6 @@ model_map = model.compute_scattered_light()
 plt.figure()
 plt.imshow(model_map)
 plt.colorbar()
-plt.savefig('Images/model_vip_SNR_'+str(int(SNR))+'.jpg')
 plt.show()
 
 # convolve takes inputs for kernel (PSF) with odd sizes in both axis
@@ -222,7 +177,6 @@ plt.figure()
 plt.imshow(final_model)
 plt.colorbar()
 plt.title('Final model')
-plt.savefig('Images/final_model_SNR_'+str(int(SNR))+'.jpg')
 plt.show()
 
 hdu = fits.PrimaryHDU(final_model)
@@ -250,9 +204,4 @@ labels = ['inc','a','H','a_in','a_out','g1','g2','weight']
 save =  np.column_stack((labels, soln.x))
 
 head = 'True values: inc='+str(itilt)+', a='+str(a)+', H='+str(ksi0)+', a_in='+str(alpha_in)+', a_out='+str(alpha_out)+', g1='+str(g1)+', g2='+str(g2)+', weight='+str(alpha)
-np.savetxt('ML_IC/ML_IC_SNR_'+str(int(SNR))+'.txt',save,delimiter=" ", fmt="%s",header=head)
-
-
-
-
-
+np.savetxt('../../Disk_code/ML_IC/ML_IC_SNR_'+str(int(SNR))+'.txt',save,delimiter=" ", fmt="%s",header=head)
