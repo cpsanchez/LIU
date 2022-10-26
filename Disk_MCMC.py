@@ -152,7 +152,7 @@ def log_probability(theta, data, zerr, PSF, SNR):
         return -np.inf
     return lp + logl(theta, data, zerr, PSF, SNR)   
     
-def initialize_walkers_backend(params_mcmc_yaml, DATADIR):
+def initialize_walkers_backend(params_mcmc_yaml, mcmcresultsdir):
     """ initialize the MCMC by preparing the initial position of the
         walkers and the backend file
 
@@ -174,8 +174,6 @@ def initialize_walkers_backend(params_mcmc_yaml, DATADIR):
 
     file_prefix = params_mcmc_yaml['FILE_PREFIX']
 
-    mcmcresultdir = os.path.join(DATADIR, 'results_MCMC')
-
     inc_init = params_mcmc_yaml['inc_init']
     a_init = params_mcmc_yaml['a_init']
     ksi0_init = params_mcmc_yaml['ksi0_init']
@@ -193,7 +191,7 @@ def initialize_walkers_backend(params_mcmc_yaml, DATADIR):
 
     # Set up the backend
     # Don't forget to clear it in case the file already exists
-    filename_backend = os.path.join(mcmcresultdir,
+    filename_backend = os.path.join(mcmcresultsdir,
                                     file_prefix + "_backend_file_mcmc_SNR_"+str(int(SNR))+".h5")
     backend_ini = emcee.backends.HDFBackend(filename_backend)
 
@@ -247,7 +245,8 @@ if __name__ == '__main__':
 
     # test on which machine I am
     if socket.gethostname() == 'e-m2irt-7':
-        basedir = '/home/localuser/Documents/LIU'
+        basedir = '/home/localuser/Documents/LIU/GitProject'
+        mcmcresultsdir = '/home/localuser/Documents/LIU/results_MCMC'
         progress = True  # if on my local machine, showing the MCMC progress bar
     else:
         #basedir = '/home/jmazoyer/data_python/tycho/'
@@ -264,8 +263,7 @@ if __name__ == '__main__':
     FITSDIR = DATADIR + '/FITS_files'
     FILE_PREFIX = params_mcmc_yaml['FILE_PREFIX']
 
-    mcmcresultdir = os.path.join(DATADIR, 'results_MCMC')
-    distutils.dir_util.mkpath(mcmcresultdir)
+    distutils.dir_util.mkpath(mcmcresultsdir)
     
     SNR = params_mcmc_yaml['SNR']
     
@@ -299,7 +297,7 @@ if __name__ == '__main__':
 
     ############   MCMC   ############
     
-    init_walkers, BACKEND = initialize_walkers_backend(params_mcmc_yaml, DATADIR)
+    init_walkers, BACKEND = initialize_walkers_backend(params_mcmc_yaml, mcmcresultsdir)
     
     nwalkers = params_mcmc_yaml['NWALKERS']
     n_dim_mcmc = params_mcmc_yaml['N_DIM_MCMC']

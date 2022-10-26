@@ -1,5 +1,5 @@
 # LOCATION AND NAME PARAMETERS
-BAND_DIR: Disk_code
+BAND_DIR: LIU
 FILE_PREFIX: disk_LIU
 BAND_NAME: LIU band
 
@@ -12,7 +12,7 @@ DIMENSION: 200
 NEW_BACKEND: 0
 #if NEW_BACKEND=0, reset the backend, if not, start where you stopped
 NWALKERS: 30 #Number of walkers
-N_ITER_MCMC: 1000 #Number of iteration
+N_ITER_MCMC: 10 #Number of iteration
 SNR: 10.
 
 N_DIM_MCMC: 8  #Number of parmeter in the MCMC
@@ -29,7 +29,7 @@ alpha_init: 0.742
 # MCMC READING PARAMETERS This is only use in the ploting part
 BURNIN: 200   #We remove the first BURNIN iteration. 
 THIN: 1       #thin (bin) the chains
-QUALITY_PLOT: 1
+QUALITY_PLOT: 2
 sigma: 1
 
 

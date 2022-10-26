@@ -16,10 +16,11 @@ from matplotlib import rcParams
 import corner
 from astropy.io import fits
 from datetime import datetime
+import matplotlib.lines as mlines
 
 ##### FUNCTIONS #####
 
-def make_chain_plot(params_mcmc_yaml):
+def make_chain_plot(params_mcmc_yaml,basedir):
     """ make_chain_plot reading the .h5 file from emcee
 
     Args:
@@ -38,8 +39,7 @@ def make_chain_plot(params_mcmc_yaml):
     SNR = params_mcmc_yaml['SNR']
 
 
-    DATADIR = os.path.join(basedir, params_mcmc_yaml['BAND_DIR'])
-    mcmcresultdir = os.path.join(DATADIR, 'results_MCMC')
+    mcmcresultdir = os.path.join(basedir, 'results_MCMC')
     file_prefix = params_mcmc_yaml['FILE_PREFIX']
 
     name_h5 = file_prefix + '_backend_file_mcmc_SNR_' + str(int(SNR))
@@ -71,7 +71,7 @@ def make_chain_plot(params_mcmc_yaml):
     n_dim_mcmc = chain.shape[2]
     nwalkers = chain.shape[1]
 
-    _, axarr = plt.subplots(n_dim_mcmc,
+    fig, axarr = plt.subplots(n_dim_mcmc,
                             sharex=True,
                             figsize=(6.4 * quality_plot, 4.8 * quality_plot))
 
@@ -87,10 +87,10 @@ def make_chain_plot(params_mcmc_yaml):
     axarr[n_dim_mcmc - 1].tick_params(axis='x', labelsize=6 * quality_plot)
     axarr[n_dim_mcmc - 1].set_xlabel('Iterations', fontsize=10 * quality_plot)
 
-    plt.savefig(os.path.join(mcmcresultdir, name_h5 + '_chains_SNR_'+str(int(SNR))+'.jpg'))
+    plt.savefig(os.path.join(mcmcresultdir, name_h5 + '_chains.jpg'))
     plt.close()
     
-def make_corner_plot(params_mcmc_yaml):
+def make_corner_plot(params_mcmc_yaml,basedir):
     """ make corner plot reading the .h5 file from emcee
 
     Args:
@@ -118,7 +118,7 @@ def make_corner_plot(params_mcmc_yaml):
     name_h5 = file_prefix + '_backend_file_mcmc_SNR_' + str(int(SNR))
 
     band_name = params_mcmc_yaml['BAND_NAME']
-
+    mcmcresultdir = os.path.join(basedir, 'results_MCMC')
     reader = emcee.backends.HDFBackend(os.path.join(mcmcresultdir, name_h5 + '.h5'))
     chain_flat = reader.get_chain(discard=burnin, thin=thin, flat=True)
 
@@ -140,22 +140,19 @@ def make_corner_plot(params_mcmc_yaml):
         quants = (0.001, 0.5, 0.999)
 
     #### Check truths = bests parameters
-    if file_prefix == 'Hband_hd48524_fake':
-        shouldweplotalldatapoints = True
-    else:
-        shouldweplotalldatapoints = False
+
     labels_hash = [labels[names[i]] for i in range(n_dim_mcmc)]
     fig = corner.corner(chain_flat,
                         labels=labels_hash,
                         quantiles=quants,
                         show_titles=True,
-                        plot_datapoints=shouldweplotalldatapoints,
+                        plot_datapoints=True,
                         verbose=False,
                         truths=(45.,70.,3.,12.,-12.,0.7,-0.2,0.665))
 
-    if file_prefix == 'Hband_hd48524_fake':
+    if file_prefix == 'disk_LIU_not':
         initial_values = [
-            74.5, 100, 12.4, 82.5, -20.1, 29.8, 76.8, 26.64, -2., 0.94, 80
+            45.05, 69.986, 3.065, 12.152, -12.023, 0.677, -0.042, 0.742
         ]
 
         green_line = mlines.Line2D([], [],
@@ -376,13 +373,13 @@ def create_header(params_mcmc_yaml):
 if __name__ == '__main__':
 
     if len(sys.argv) == 1:
-        str_yalm = 'Disk_LIU_MCMC_SNR_2.yaml'
+        str_yalm = 'Disk_LIU_MCMC.yaml'
     else:
         str_yalm = sys.argv[1]
 
     # test on which machine I am
     if socket.gethostname() == 'e-m2irt-7':
-        basedir = '/home/localuser/Documents/LIU'
+        basedir = '/home/localuser/Documents/LIU/Disk_code'
         progress = True  # if on my local machine, showing the MCMC progress bar
     else:
         #basedir = '/home/jmazoyer/data_python/tycho/'
@@ -395,15 +392,14 @@ if __name__ == '__main__':
     with open(yaml_path_file, 'r') as yaml_file:
         params_mcmc_yaml = yaml.safe_load(yaml_file)
 
-    DATADIR = os.path.join(basedir, params_mcmc_yaml['BAND_DIR'])
     FILE_PREFIX = params_mcmc_yaml['FILE_PREFIX']
-    mcmcresultdir = os.path.join(DATADIR, 'results_MCMC')
+    mcmcresultdir = os.path.join(basedir, 'results_MCMC')
     
     # Plot the chain values
-    make_chain_plot(params_mcmc_yaml)
+    make_chain_plot(params_mcmc_yaml,basedir)
     
     # Plot the PDFs
-    make_corner_plot(params_mcmc_yaml)
+    make_corner_plot(params_mcmc_yaml,basedir)
 
     # measure the best likelyhood model and excract MCMC errors
     #hdr = create_header(params_mcmc_yaml)
