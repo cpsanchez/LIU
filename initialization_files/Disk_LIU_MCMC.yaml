@@ -1,0 +1,65 @@
+# LOCATION AND NAME PARAMETERS
+BAND_DIR: Disk_code
+FILE_PREFIX: disk_LIU
+BAND_NAME: LIU band
+
+# STAR OBSERVATION PARAMETERS
+DISTANCE_STAR: 80.0
+PIXSCALE_INS: 0.012255 # sphere pixel scale. arcesecond per pixel
+DIMENSION: 200
+
+# MCMC PARAMETERS
+NEW_BACKEND: 0
+#if NEW_BACKEND=0, reset the backend, if not, start where you stopped
+NWALKERS: 30 #Number of walkers
+N_ITER_MCMC: 1000 #Number of iteration
+SNR: 10.
+
+N_DIM_MCMC: 8  #Number of parmeter in the MCMC
+# INITIAL MODEL PARAMETERS
+inc_init: 45.050
+a_init: 69.986
+ksi0_init: 3.065
+ain_init: 12.152
+aout_init: -12.023
+g1_init: 0.677
+g2_init: -0.042
+alpha_init: 0.742
+
+# MCMC READING PARAMETERS This is only use in the ploting part
+BURNIN: 200   #We remove the first BURNIN iteration. 
+THIN: 1       #thin (bin) the chains
+QUALITY_PLOT: 1
+sigma: 1
+
+
+NAMES:
+- inc
+- a
+- ksi0
+- ain
+- aout
+- g1
+- g2
+- Alph
+
+LABELS:
+  inc: $i[^{\circ}]$
+  a: a[AU]
+  ksi0: Ksi_0
+  ain: $Ain$
+  aout: $Aout$
+  g1: g1
+  g2: g2
+  Alph: $\alpha$
+
+COMMENTS:
+  inc: ' degree, inclination'
+  a: ' AU, disk radius'
+  ksi0: ' au, scale height at the reference radius'
+  ain: ' radial inner power law'
+  aout: ' radial outer power law'
+  g1: ' 1st HG param'
+  g2: ' 2nd HG param'
+  Alph: ' relative HG weight'
+
