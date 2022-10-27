@@ -39,11 +39,11 @@ def make_chain_plot(params_mcmc_yaml,basedir):
     SNR = params_mcmc_yaml['SNR']
 
 
-    mcmcresultdir = os.path.join(basedir, 'results_MCMC')
+    mcmcresultdir = os.path.join(basedir, 'results_MCMC_sphere')
     file_prefix = params_mcmc_yaml['FILE_PREFIX']
 
     name_h5 = file_prefix + '_backend_file_mcmc_SNR_' + str(int(SNR))
-
+    print(os.path.join(mcmcresultdir, name_h5 + '.h5'))
     reader = emcee.backends.HDFBackend(os.path.join(mcmcresultdir, name_h5 + '.h5'))
     chain = reader.get_chain(discard=0, thin=thin)
     log_prob_samples_flat = reader.get_log_prob(discard=burnin,
@@ -87,7 +87,7 @@ def make_chain_plot(params_mcmc_yaml,basedir):
     axarr[n_dim_mcmc - 1].tick_params(axis='x', labelsize=6 * quality_plot)
     axarr[n_dim_mcmc - 1].set_xlabel('Iterations', fontsize=10 * quality_plot)
 
-    plt.savefig(os.path.join(mcmcresultdir, name_h5 + '_chains.jpg'))
+    #plt.savefig(os.path.join(mcmcresultdir, name_h5 + '_chains.jpg'))
     plt.close()
     
 def make_corner_plot(params_mcmc_yaml,basedir):
@@ -118,7 +118,7 @@ def make_corner_plot(params_mcmc_yaml,basedir):
     name_h5 = file_prefix + '_backend_file_mcmc_SNR_' + str(int(SNR))
 
     band_name = params_mcmc_yaml['BAND_NAME']
-    mcmcresultdir = os.path.join(basedir, 'results_MCMC')
+    mcmcresultdir = os.path.join(basedir, 'results_MCMC_sphere')
     reader = emcee.backends.HDFBackend(os.path.join(mcmcresultdir, name_h5 + '.h5'))
     chain_flat = reader.get_chain(discard=burnin, thin=thin, flat=True)
 
@@ -221,7 +221,7 @@ def make_corner_plot(params_mcmc_yaml,basedir):
                        va="top",
                        fontsize=44)
 
-    plt.savefig(os.path.join(mcmcresultdir, name_h5 + '_pdfs.pdf'))
+    #plt.savefig(os.path.join(mcmcresultdir, name_h5 + '_pdfs.pdf'))
     plt.close()
 
 def create_header(params_mcmc_yaml):
@@ -383,7 +383,7 @@ if __name__ == '__main__':
         progress = True  # if on my local machine, showing the MCMC progress bar
     else:
         #basedir = '/home/jmazoyer/data_python/tycho/'
-        basedir = 'ASK_JOHAN'
+        basedir = '/obs/cpuertosanchez/LIU'
         progress = False
         
     # open the parameter file
@@ -393,7 +393,7 @@ if __name__ == '__main__':
         params_mcmc_yaml = yaml.safe_load(yaml_file)
 
     FILE_PREFIX = params_mcmc_yaml['FILE_PREFIX']
-    mcmcresultdir = os.path.join(basedir, 'results_MCMC')
+    mcmcresultdir = os.path.join(basedir, 'results_MCMC_sphere')
     
     # Plot the chain values
     make_chain_plot(params_mcmc_yaml,basedir)

@@ -36,7 +36,6 @@ import distutils.dir_util
 ##### FUNCTIONS #####
 
 def getDisk(theta, noise, SNR):
-
    # Image parameters
    pixel_scale = 0.01225 # pixel scale in arcsec/px
    dstar = 80 # distance to the star in pc
@@ -118,13 +117,13 @@ def logp(theta):
     g2 = theta[6]
     alpha = theta[7]
     
-    if (inc < 0 or inc > 90):
+    if (inc < 0.0 or inc > 87.6):
         return -np.inf
 
     if (a < 20 or a > 130):  
         return -np.inf
         
-    if (ksi0 < 0.1 or ksi0 > 10):  
+    if (ksi0/a < 0.005 or ksi0/a > 0.2):  
         return -np.inf
 
     if (ain < 1 or aout > 30):
@@ -150,6 +149,7 @@ def log_probability(theta, data, zerr, PSF, SNR):
     lp = logp(theta)
     if not np.isfinite(lp):
         return -np.inf
+    
     return lp + logl(theta, data, zerr, PSF, SNR)   
     
 def initialize_walkers_backend(params_mcmc_yaml, mcmcresultsdir):
@@ -246,11 +246,11 @@ if __name__ == '__main__':
     # test on which machine I am
     if socket.gethostname() == 'e-m2irt-7':
         basedir = '/home/localuser/Documents/LIU/GitProject'
-        mcmcresultsdir = '/home/localuser/Documents/LIU/results_MCMC'
+        mcmcresultsdir = '/home/localuser/Documents/LIU/Disk_code/results_MCMC'
         progress = True  # if on my local machine, showing the MCMC progress bar
     else:
-        #basedir = '/home/jmazoyer/data_python/tycho/'
-        basedir = 'ASK_JOHAN'
+        basedir = '/obs/cpuertosanchez'
+        mcmcresultsdir = '/obs/cpuertosanchez/LIU/results_MCMC_sphere'
         progress = False
         
     # open the parameter file
@@ -306,4 +306,5 @@ if __name__ == '__main__':
         nwalkers, n_dim_mcmc, log_probability, args=(REDUCED_DATA, NOISE, PSF, SNR), backend=BACKEND
     )
     sampler.run_mcmc(init_walkers, params_mcmc_yaml['N_ITER_MCMC'], progress=progress);
+    print('Finished')
 
