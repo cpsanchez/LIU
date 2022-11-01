@@ -200,7 +200,7 @@ def initialize_walkers_backend(params_mcmc_yaml, mcmcresultsdir):
     # to start in a small ball around the a priori preferred position.
     # Dont worry, the walkers quickly branch out and explore the
     # rest of the space.
-    if new_backend == 1 or new_backend == 0:
+    if new_backend == 1:
         init_ball0 = np.random.uniform(theta_init[0] * 0.999,
                                        theta_init[0] * 1.001,
                                        size=(nwalkers))
