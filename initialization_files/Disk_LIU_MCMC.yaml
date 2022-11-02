@@ -9,17 +9,17 @@ PIXSCALE_INS: 0.012255 # sphere pixel scale. arcesecond per pixel
 DIMENSION: 200
 
 # MCMC PARAMETERS
-NEW_BACKEND: 0
+NEW_BACKEND: 1
 #if NEW_BACKEND=0, reset the backend, if not, start where you stopped
 NWALKERS: 46 #Number of walkers
-N_ITER_MCMC: 2000 #Number of iteration
-SNR: 2.
+N_ITER_MCMC: 1200 #Number of iteration
+SNR: 10.
 
 N_DIM_MCMC: 8  #Number of parmeter in the MCMC
 # INITIAL MODEL PARAMETERS
-inc_init: 45.050
-a_init: 69.986
-ksi0_init: 3.065
+inc_init: 30.050
+a_init: 46.986
+ksi0_init: 5.235
 ain_init: 12.152
 aout_init: -12.023
 g1_init: 0.677
