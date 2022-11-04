@@ -12,14 +12,14 @@ DIMENSION: 200
 NEW_BACKEND: 0
 #if NEW_BACKEND=1, reset the backend, if not, start where you stopped
 NWALKERS: 46 #Number of walkers
-N_ITER_MCMC: 600 #Number of iteration
+N_ITER_MCMC: 2000 #Number of iteration
 SNR: 10.
 
 N_DIM_MCMC: 8  #Number of parmeter in the MCMC
 # INITIAL MODEL PARAMETERS
-inc_init: 30.050
-a_init: 46.986
-ksi0_init: 5.235
+inc_init: 80.050
+a_init: 47.026
+ksi0_init: 5.239
 ain_init: 12.152
 aout_init: -12.023
 g1_init: 0.677
