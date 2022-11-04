@@ -149,7 +149,6 @@ def log_probability(theta, data, zerr, PSF, SNR):
     lp = logp(theta)
     if not np.isfinite(lp):
         return -np.inf
-    print('here')
     return lp + logl(theta, data, zerr, PSF, SNR)   
     
 def initialize_walkers_backend(params_mcmc_yaml, mcmcresultsdir):
