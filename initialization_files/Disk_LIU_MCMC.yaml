@@ -9,7 +9,7 @@ PIXSCALE_INS: 0.012255 # sphere pixel scale. arcesecond per pixel
 DIMENSION: 200
 
 # MCMC PARAMETERS
-NEW_BACKEND: 0
+NEW_BACKEND: 1
 #if NEW_BACKEND=1, reset the backend, if not, start where you stopped
 NWALKERS: 46 #Number of walkers
 N_ITER_MCMC: 2000 #Number of iteration
