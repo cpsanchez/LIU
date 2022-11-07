@@ -120,7 +120,7 @@ def logp(theta):
     if (inc < 0.0 or inc > 87.6):
         return -np.inf
 
-    if (a < 20 or a > 130):  
+    if (a < 10 or a > 130):  
         return -np.inf
         
     if (ksi0/a < 0.005 or ksi0/a > 0.2):  
