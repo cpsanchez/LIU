@@ -69,7 +69,7 @@ def getDisk(theta, noise, SNR):
                                    'weight': alpha,
                                    'polar': False
                                },
-                               flux_max=SNR*np.max(noise)/9.5)
+                               flux_max=SNR*np.max(noise)/13.)
 
    return model.compute_scattered_light()
    

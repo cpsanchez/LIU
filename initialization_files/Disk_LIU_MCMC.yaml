@@ -18,8 +18,8 @@ SNR: 10.
 N_DIM_MCMC: 8  #Number of parmeter in the MCMC
 # INITIAL MODEL PARAMETERS
 inc_init: 30.050
-a_init: 14.784
-ksi0_init: 1.693
+a_init: 59.178
+ksi0_init: 4.208
 ain_init: 12.152
 aout_init: -12.023
 g1_init: 0.677
