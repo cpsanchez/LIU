@@ -12,7 +12,7 @@ DIMENSION: 200
 NEW_BACKEND: 1
 #if NEW_BACKEND=1, reset the backend, if not, start where you stopped
 NWALKERS: 30 #Number of walkers
-N_ITER_MCMC: 1200 #Number of iteration
+N_ITER_MCMC: 1500 #Number of iteration
 SNR: 10.
 
 N_DIM_MCMC: 8  #Number of parmeter in the MCMC
