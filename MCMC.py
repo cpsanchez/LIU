@@ -14,6 +14,7 @@ from astropy.io import fits
 from astropy.convolution import convolve
 from scipy.optimize import minimize
 import emcee
+import os
 
 import vip_hci as vip
 vvip = vip.__version__
@@ -178,9 +179,10 @@ fake_disk1_conv_noise = fake_disk1_conv + background
 
 ##### ML 1st GUESS #####
 
+np.random.seed(42)
 nll = lambda *args: -log_likelihood(*args)
 initial = np.array([itilt, a, ksi0, alpha_in, alpha_out, g1, g2, weight1]) + 0.1 * np.random.randn(8)
-soln = minimize(nll, initial, args=(fake_disk1_conv_noise, noisemap))
+soln = minimize(nll, initial, args=(fake_disk1_conv_noise, noisemap, SNR, background))
 itilt_ml, a_ml, ksi0_ml, alpha_in_ml, alpha_out_ml, g1_ml, g2_ml, weight1_ml = soln.x
 
 print("Maximum likelihood estimates:")
