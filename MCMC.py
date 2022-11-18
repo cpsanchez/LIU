@@ -212,7 +212,7 @@ if reset:
 ##### MCMC #####
 
 sampler = emcee.EnsembleSampler(
-    nwalkers, ndim, log_probability, args=(fake_disk1_conv_noise, noisemap, SNR, background), backend=BACKEND
+    nwalkers, ndim, log_probability, args=(fake_disk1_conv_noise, noisemap, SNR, background), backend=backend_ini
 )
 
 sampler.run_mcmc(pos, 1200)
