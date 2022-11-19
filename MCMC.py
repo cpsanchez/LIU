@@ -143,8 +143,9 @@ dstar= 80 # distance to the star in pc
 nx = 200 # number of pixels of your image in X
 ny = 200 # number of pixels of your image in Y
 
+rm = 15.1*pixel_scale*dstar/2
 itilt = 30. # inclination of your disk in degrees
-a = 59.192 # semimajoraxis of the disk in au
+a = 3*rm # semimajoraxis of the disk in au
 ksi0 = 0.11*a # rerence scale height at the semi-major axis of the disk*a
 gamma = 2. # exponant of the vertical exponential decay
 alpha_in = 12
@@ -156,7 +157,7 @@ g2=-0.042
 weight1=0.742
 
 SNR = 10.
-div = 1.2
+div = 5.1
 
 reset = 1 # 1 resets backend, 0 continues from last entry of backend
 
@@ -202,7 +203,7 @@ print("Weight = {0:.3f}".format(np.abs(weight1_ml)))
 pos = soln.x + 1e-4 * np.random.randn(46, 8)
 nwalkers, ndim = pos.shape
 
-filename_backend = os.path.join("results_MCMC_sphere/disk_LIU_backend_file_mcmc_SNR_"+str(int(SNR))+".h5")
+filename_backend = os.path.join("results_MCMC_sphere/disk_LIU_backend_file_mcmc_i"+str(int(itilt))+"_a"+str(int(a/rm))+"_ksi0"+str(int(ksi0/a*100))+"_SNR"+str(int(SNR))+".h5")
 backend_ini = emcee.backends.HDFBackend(filename_backend)
 if reset:
     backend_ini.reset(nwalkers, ndim)
