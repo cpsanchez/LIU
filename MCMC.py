@@ -143,7 +143,7 @@ dstar= 80 # distance to the star in pc
 nx = 200 # number of pixels of your image in X
 ny = 200 # number of pixels of your image in Y
 
-itilt = 80. # inclination of your disk in degrees
+itilt = 30. # inclination of your disk in degrees
 a = 59.192 # semimajoraxis of the disk in au
 ksi0 = 0.11*a # rerence scale height at the semi-major axis of the disk*a
 gamma = 2. # exponant of the vertical exponential decay
@@ -156,7 +156,7 @@ g2=-0.042
 weight1=0.742
 
 SNR = 10.
-div = 3.2
+div = 1.2
 
 reset = 1 # 1 resets backend, 0 continues from last entry of backend
 
@@ -215,5 +215,5 @@ sampler = emcee.EnsembleSampler(
     nwalkers, ndim, log_probability, args=(fake_disk1_conv_noise, noisemap, SNR, background), backend=backend_ini
 )
 
-sampler.run_mcmc(pos, 1200)
+sampler.run_mcmc(pos, 800)
 print('Finished')
