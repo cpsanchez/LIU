@@ -159,7 +159,7 @@ weight1=0.742
 SNR = 10.
 div = 5.1
 
-reset = 0 # 1 resets backend, 0 continues from last entry of backend
+reset = 1 # 1 resets backend, 0 continues from last entry of backend
 
 
 
@@ -216,5 +216,5 @@ sampler = emcee.EnsembleSampler(
     nwalkers, ndim, log_probability, args=(fake_disk1_conv_noise, noisemap, SNR, background), backend=backend_ini
 )
 
-sampler.run_mcmc(pos, 200)
+sampler.run_mcmc(pos, 1000)
 print('Finished')
