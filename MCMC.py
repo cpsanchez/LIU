@@ -144,9 +144,9 @@ nx = 200 # number of pixels of your image in X
 ny = 200 # number of pixels of your image in Y
 
 rm = 15.1*pixel_scale*dstar/2
-itilt = 87.5 # inclination of your disk in degrees
+itilt = 85. # inclination of your disk in degrees
 a = 8*rm # semimajoraxis of the disk in au
-ksi0 = 0.03*a # rerence scale height at the semi-major axis of the disk*a
+ksi0 = 0.11*a # rerence scale height at the semi-major axis of the disk*a
 gamma = 2. # exponant of the vertical exponential decay
 alpha_in = 12
 alpha_out = -12
