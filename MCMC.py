@@ -38,7 +38,7 @@ from vip_hci.var import create_synth_psf
 ##### FUNCTIONS #####
 
 def log_likelihood(theta, data, zerr, SNR, background):
-    itilt, a, ksi0, alpha_in, alpha_out, g1, g2, weight1 = theta
+    itilt, a, ksi0, alpha_in, alpha_out, g1, g2, weight1,e,w = theta
     
     pixel_scale=0.01225 # pixel scale in arcsec/px
     dstar= 80 # distance to the star in pc
@@ -57,9 +57,9 @@ def log_likelihood(theta, data, zerr, SNR, background):
         weight1 = 0.001
 
     fake_disk = ScatteredLightDisk(nx=nx, ny=ny, distance=dstar,
-                                itilt=itilt, omega=0, pxInArcsec=pixel_scale, pa=0,
+                                itilt=itilt, omega=w, pxInArcsec=pixel_scale, pa=0,
                                 density_dico={'name':'2PowerLaws','ain':alpha_in,'aout':alpha_out,
-                                              'a':a,'e':0.0,'ksi0':ksi0,'gamma':gamma,'beta':beta},
+                                              'a':a,'e':e,'ksi0':ksi0,'gamma':gamma,'beta':beta},
                                 spf_dico={'name':'DoubleHG', 'g':[g1,g2], 'weight':weight1, 'polar':False},
                                 flux_max=SNR*np.nanmax(background)/div)
     model_map = fake_disk.compute_scattered_light()
@@ -79,6 +79,8 @@ def log_prior(theta):
     g1 = theta[5]
     g2 = theta[6]
     alpha = theta[7]
+    e = theta[8]
+    w = theta[9]
     
     if (inc < 0.0 or inc > 87.6):
         return -np.inf
@@ -102,6 +104,12 @@ def log_prior(theta):
         return -np.inf
 
     if (alpha < 0.0005 or alpha > 0.9999):
+        return -np.inf
+
+    if (e < 0.0005 or e > 0.9999):
+        return -np.inf
+
+    if (w < -5 or w > 95.):
         return -np.inf
         
     # otherwise ...
@@ -144,8 +152,8 @@ nx = 200 # number of pixels of your image in X
 ny = 200 # number of pixels of your image in Y
 
 rm = 15.1*pixel_scale*dstar/2
-itilt = 82. # inclination of your disk in degrees
-a = 3*rm # semimajoraxis of the disk in au
+itilt = 80. # inclination of your disk in degrees
+a = 8*rm # semimajoraxis of the disk in au
 ksi0 = 0.03*a # rerence scale height at the semi-major axis of the disk*a
 gamma = 2. # exponant of the vertical exponential decay
 alpha_in = 12
@@ -157,18 +165,19 @@ g2=-0.042
 weight1=0.742
 
 SNR = 10.
-div = 1.
+div = 2.
 
 reset = 1 # 1 resets backend, 0 continues from last entry of backend
 
-
+e = 0.2
+w = 0
 
 ##### DISK MODEL #####
 
 fake_disk1 = ScatteredLightDisk(nx=nx, ny=ny, distance=dstar,
-                                itilt=itilt, omega=0, pxInArcsec=pixel_scale, pa=0,
+                                itilt=itilt, omega=w, pxInArcsec=pixel_scale, pa=0,
                                 density_dico={'name':'2PowerLaws','ain':alpha_in,'aout':alpha_out,
-                                              'a':a,'e':0.0,'ksi0':ksi0,'gamma':gamma,'beta':beta},
+                                              'a':a,'e':e,'ksi0':ksi0,'gamma':gamma,'beta':beta},
                                 spf_dico={'name':'DoubleHG', 'g':[g1,g2], 'weight':weight1, 'polar':False},
                                 flux_max=SNR*np.nanmax(background)/div)
 
@@ -182,9 +191,9 @@ fake_disk1_conv_noise = fake_disk1_conv + background
 
 np.random.seed(42)
 nll = lambda *args: -log_likelihood(*args)
-initial = np.array([itilt, a, ksi0, alpha_in, alpha_out, g1, g2, weight1]) + 0.1 * np.random.randn(8)
+initial = np.array([itilt, a, ksi0, alpha_in, alpha_out, g1, g2, weight1,e,w]) + 0.1 * np.random.randn(10)
 soln = minimize(nll, initial, args=(fake_disk1_conv_noise, noisemap, SNR, background))
-itilt_ml, a_ml, ksi0_ml, alpha_in_ml, alpha_out_ml, g1_ml, g2_ml, weight1_ml = soln.x
+itilt_ml, a_ml, ksi0_ml, alpha_in_ml, alpha_out_ml, g1_ml, g2_ml, weight1_ml,e_ml,w_ml = soln.x
 
 print("Maximum likelihood estimates:")
 print("Inclination = {0:.3f}".format(itilt_ml))
@@ -195,15 +204,17 @@ print("alpha_out = {0:.3f}".format(alpha_out_ml))
 print("g1 = {0:.3f}".format(g1_ml))
 print("g2 = {0:.3f}".format(g2_ml))
 print("Weight = {0:.3f}".format(np.abs(weight1_ml)))
+print("e = {0:.3f}".format(e_ml))
+print("w = {0:.3f}".format(w_ml))
 
 
 
 ##### BACKEND #####
 
-pos = soln.x + 1e-4 * np.random.randn(46, 8)
+pos = soln.x + 1e-4 * np.random.randn(46, 10)
 nwalkers, ndim = pos.shape
 
-filename_backend = os.path.join("results_MCMC_sphere/disk_LIU_backend_file_mcmc_i"+str(int(itilt))+"_a"+str(int(a/rm))+"_ksi0"+str(int(ksi0/a*100))+"_SNR"+str(int(SNR))+".h5")
+filename_backend = os.path.join("results_MCMC_sphere/disk_LIU_backend_file_mcmc_i"+str(int(itilt))+"_a"+str(int(a/rm))+"_ksi0"+str(int(ksi0/a*100))+"_SNR"+str(int(SNR))+"_e"+str(int(e*100))+"_w"+str(w)+".h5")
 backend_ini = emcee.backends.HDFBackend(filename_backend)
 if reset:
     backend_ini.reset(nwalkers, ndim)
@@ -216,5 +227,5 @@ sampler = emcee.EnsembleSampler(
     nwalkers, ndim, log_probability, args=(fake_disk1_conv_noise, noisemap, SNR, background), backend=backend_ini
 )
 
-sampler.run_mcmc(pos, 1300)
+sampler.run_mcmc(pos, 1000)
 print('Finished')
