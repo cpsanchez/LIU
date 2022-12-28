@@ -170,7 +170,7 @@ div = 2.
 reset = 1 # 1 resets backend, 0 continues from last entry of backend
 
 e = 0.12
-w = 90
+w = 0
 
 ##### DISK MODEL #####
 
