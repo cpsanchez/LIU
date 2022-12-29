@@ -152,7 +152,7 @@ nx = 200 # number of pixels of your image in X
 ny = 200 # number of pixels of your image in Y
 
 rm = 15.1*pixel_scale*dstar/2
-itilt = 30. # inclination of your disk in degrees
+itilt = 80. # inclination of your disk in degrees
 a = 8*rm # semimajoraxis of the disk in au
 ksi0 = 0.03*a # rerence scale height at the semi-major axis of the disk*a
 gamma = 2. # exponant of the vertical exponential decay
@@ -170,7 +170,7 @@ div = 2.
 reset = 1 # 1 resets backend, 0 continues from last entry of backend
 
 e = 0.12
-w = 0
+w = 90
 
 ##### DISK MODEL #####
 
